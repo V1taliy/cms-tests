@@ -7,10 +7,10 @@ import utils.WebDriverWrapper;
 public class LoginPage extends AbstractPage {
 
     private static final Logger log = Logger.getLogger(LoginPage.class);
-    private static final String DEV_URL = PropertyLoader.loadProperty("site.url");
+    private static final String LOGIN_URL = PropertyLoader.loadProperty("login.url");
 
     public LoginPage(WebDriverWrapper driverWrapper) {
-        super(driverWrapper, DEV_URL);
+        super(driverWrapper, LOGIN_URL);
     }
 
     public boolean openLoginPage() {
@@ -68,13 +68,25 @@ public class LoginPage extends AbstractPage {
         web.waitElementToBeVisibility("alertInvalidUserOrPass");
     }
 
+    /**
+     * This method get text from locator
+     *
+     * @return true if get text from locator, otherwise false
+     */
+    public String getTextFromElement(){
+        return web.getTextFromElement("signInToContinue");
+    }
     public void waitInvisibilityLoader() {
-        web.waitDisappearElement("apisSystemLoader");
+        web.waitDisappearElement("AraneumLoader");
     }
 
-    public void waitInvisibilityPanelBody() {
+    public void waitInvisibilityLoginForm() {
         web.waitDisappearElement("loginForm",
                 Integer.parseInt(PropertyLoader.loadProperty("wait.timeout1sec")));
+    }
+    public void waitInvisibilityNaviUser() {
+        web.waitDisappearElement("naviUser",
+                Integer.parseInt(PropertyLoader.loadProperty("wait.timeout3sec")));
     }
 
     /**
@@ -85,13 +97,18 @@ public class LoginPage extends AbstractPage {
      */
     public boolean isFieldRequiredUserNameTextPresent() {
         return web.isElementPresent("fieldRequiredUserNameText") &&
-                web.isElementPresent("fieldRequiredPasswordText");
+               web.isElementPresent("fieldRequiredPasswordText");
     }
 
     public String getPageURL() {
         return getCurrentPageURL();
     }
 
+    /**
+     * Check is Login Form present on a page
+     *
+     * @return true if Login Form present, otherwise - false
+     */
     public boolean isLoginFormPresent() {
         return web.isElementPresent("loginForm");
     }

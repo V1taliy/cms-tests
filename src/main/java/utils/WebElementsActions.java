@@ -155,6 +155,16 @@ public class WebElementsActions {
     }
 
     /**
+     * This method get text from the locator
+     *
+     * @param elementLocator search element locator for click
+     * @throws NoSuchElementException If the locator cannot found
+     */
+    public String getTextFromElement(String elementLocator) throws NoSuchElementException{
+        return driverWrapper.findElement(config.getLocator(elementLocator)).getText();
+    }
+
+    /**
      * Click a button
      *
      * @param buttonLocator search button locator for click
@@ -408,9 +418,9 @@ public class WebElementsActions {
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public boolean waitDisappearElement(String disappearLocator, int timeWait) throws NoSuchElementException, TimeoutException {
+    public WebElement waitDisappearElement(String disappearLocator, int timeWait) throws NoSuchElementException, TimeoutException {
         WebDriverWait wait = new WebDriverWait(driverWrapper.getOriginalDriver(), timeWait);
-        return wait.until(ExpectedConditions.invisibilityOfElementLocated(config.getLocator(disappearLocator)));
+        return wait.until(ExpectedConditions.presenceOfElementLocated(config.getLocator(disappearLocator)));
     }
 
     /**
