@@ -1,0 +1,6 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="globalSuite" verbose="1">
+    <suite-files>
+        <suite-file path="login.xml"/>
+    </suite-files>
+</suite>
