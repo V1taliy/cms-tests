@@ -175,6 +175,11 @@ public class WebElementsActions {
         log.info(String.format("click on button < %s >", buttonLocator));
     }
 
+    public void clickBtn(String buttonLocator) throws NoSuchElementException {
+        driverWrapper.findElement(config.getLocator(buttonLocator)).submit();
+        log.info(String.format("click on button < %s >", buttonLocator));
+    }
+
     /**
      * Click button if this operation possible
      *
@@ -418,9 +423,9 @@ public class WebElementsActions {
      * @throws NoSuchElementException
      * @throws TimeoutException
      */
-    public WebElement waitDisappearElement(String disappearLocator, int timeWait) throws NoSuchElementException, TimeoutException {
+    public boolean waitDisappearElement(String disappearLocator, int timeWait) throws NoSuchElementException, TimeoutException {
         WebDriverWait wait = new WebDriverWait(driverWrapper.getOriginalDriver(), timeWait);
-        return wait.until(ExpectedConditions.presenceOfElementLocated(config.getLocator(disappearLocator)));
+        return wait.until(ExpectedConditions.invisibilityOfElementLocated(config.getLocator(disappearLocator)));
     }
 
     /**

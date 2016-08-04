@@ -1,6 +1,7 @@
 package pages;
 
 import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
 import utils.PropertyLoader;
 import utils.WebDriverWrapper;
 
@@ -51,7 +52,9 @@ public class LoginPage extends AbstractPage {
      * Click login button
      */
     public void clickLoginButton() {
-        web.clickButton("loginButton");
+        driverWrapper.findElement(By.xpath(".//button[contains(@class, 'btn')]")).click();
+//        web.moveToElementAndClick("loginButton",);
+//        web.clickBtn("loginButton");
     }
 
     /**
@@ -76,16 +79,13 @@ public class LoginPage extends AbstractPage {
     public String getTextFromElement(){
         return web.getTextFromElement("signInToContinue");
     }
+
     public void waitInvisibilityLoader() {
         web.waitDisappearElement("AraneumLoader");
     }
 
     public void waitInvisibilityLoginForm() {
         web.waitDisappearElement("loginForm",
-                Integer.parseInt(PropertyLoader.loadProperty("wait.timeout1sec")));
-    }
-    public void waitInvisibilityNaviUser() {
-        web.waitDisappearElement("naviUser",
                 Integer.parseInt(PropertyLoader.loadProperty("wait.timeout3sec")));
     }
 

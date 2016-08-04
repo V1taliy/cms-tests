@@ -28,7 +28,7 @@ public class LoginTests extends Fixture {
     }
 
     @Test(priority = 2, dependsOnMethods = {"openWebSite"})
-    public void loginWithNonExistingCredentials() {
+    public void loginWithNonExistingCredentials() throws InterruptedException {
         fillLoginForm(INVALID_NAME,INVALID_PASSWORD);
     }
 
@@ -46,37 +46,39 @@ public class LoginTests extends Fixture {
     }
 
     @Test(priority = 5, dependsOnMethods = {"openWebSite"})
-    public void loginAsUser() {
-        cms.web.refreshPage();
-        cms.loginPage.waitInvisibilityLoader();
+    public void loginAsUser() throws InterruptedException {
         cms.loginPage.inputUserName(USER_NAME);
         cms.loginPage.inputPassword(USER_PASSWORD);
+        Thread.sleep(1000);
         cms.loginPage.clickLoginButton();
         Assert.assertEquals(driverWrapper.getTitle(), "Admin :: Araneum - Multisite manage tool");
         cms.mainPage.clickLogoutButton();
     }
 
     @Test(priority = 6, dependsOnMethods = {"openWebSite"})
-    public void loginAsAdminUsingEmail() {
+    public void loginAsAdminUsingEmail() throws InterruptedException {
         cms.loginPage.inputUserName(ADMIN_EMAIL);
         cms.loginPage.inputPassword(ADMIN_PASSWORD);
+        Thread.sleep(1000);
         cms.loginPage.clickLoginButton();
         Assert.assertEquals(driverWrapper.getTitle(), "Admin :: Araneum - Multisite manage tool");
         cms.mainPage.clickLogoutButton();
     }
 
     @Test(priority = 7, dependsOnMethods = {"openWebSite"})
-    public void loginAsAdmin() {
+    public void loginAsAdmin() throws InterruptedException {
         cms.loginPage.inputUserName(ADMIN_NAME);
         cms.loginPage.inputPassword(ADMIN_PASSWORD);
+        Thread.sleep(2000);
         cms.loginPage.clickLoginButton();
         Assert.assertEquals(driverWrapper.getTitle(), "Admin :: Araneum - Multisite manage tool");
         cms.mainPage.clickLogoutButton();
     }
 
-    private void fillLoginForm(String username, String password) {
+    private void fillLoginForm(String username, String password) throws InterruptedException {
         cms.loginPage.inputUserName(username);
         cms.loginPage.inputPassword(password);
+        Thread.sleep(3000);
         cms.loginPage.clickLoginButton();
         cms.loginPage.waitInvisibilityLoginForm();
         cms.loginPage.waitAlertInvalidUserOrPass();

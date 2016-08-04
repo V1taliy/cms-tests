@@ -15,7 +15,8 @@ public class MainPage extends AbstractPage{
 
     public void clickLogoutButton() {
         web.clickElement("naviUser");
-        web.waitDisappearElement("logoutButton",  Integer.parseInt(PropertyLoader.loadProperty("wait.timeout1sec")));
+        web.waitElementToBeVisibility("logoutButton");
+//        web.waitDisappearElement("logoutButton",  Integer.parseInt(PropertyLoader.loadProperty("wait.timeout5sec")));
         web.clickButton("logoutButton");
     }
 
