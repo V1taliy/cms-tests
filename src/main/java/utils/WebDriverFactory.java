@@ -91,7 +91,7 @@ public class WebDriverFactory {
                     Arrays.asList("--ignore-certificate-errors"));
             capabilities.setCapability(CapabilityType.SUPPORTS_APPLICATION_CACHE, true);
         } else if (FIREFOX.equals(browserName)) {
-//            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
+            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
             capabilities.setBrowserName(browserName);
             capabilities = DesiredCapabilities.firefox();
             capabilities.setCapability(CapabilityType.TAKES_SCREENSHOT, true);

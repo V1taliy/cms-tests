@@ -53,8 +53,6 @@ public class LoginPage extends AbstractPage {
      */
     public void clickLoginButton() {
         driverWrapper.findElement(By.xpath(".//button[contains(@class, 'btn')]")).click();
-//        web.moveToElementAndClick("loginButton",);
-//        web.clickBtn("loginButton");
     }
 
     /**
@@ -76,8 +74,8 @@ public class LoginPage extends AbstractPage {
      *
      * @return true if get text from locator, otherwise false
      */
-    public String getTextFromElement(){
-        return web.getTextFromElement("signInToContinue");
+    public String getTextFromElement(String element){
+        return web.getTextFromElement(element);
     }
 
     public void waitInvisibilityLoader() {

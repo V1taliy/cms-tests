@@ -1,8 +1,8 @@
 package pages;
 
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
-import utils.PropertyLoader;
 import utils.WebDriverWrapper;
 
 import java.util.List;
@@ -16,7 +16,6 @@ public class MainPage extends AbstractPage{
     public void clickLogoutButton() {
         web.clickElement("naviUser");
         web.waitElementToBeVisibility("logoutButton");
-//        web.waitDisappearElement("logoutButton",  Integer.parseInt(PropertyLoader.loadProperty("wait.timeout5sec")));
         web.clickButton("logoutButton");
     }
 
@@ -24,25 +23,47 @@ public class MainPage extends AbstractPage{
      * Click on item from navigation panel
      *
      * @param navItemNumber navigation item number, where
-     *                      1 - Withdrawal
-     *                      2 - Brands
-     *                      3 - Users
-     *                      4 - Groups
-     *                      5 - Desk exp.time
-     *                      6 - Admin Menu
-     *                      7 - Logs
-     *                      8 - Email (must be clicked Logs)
-     *                      9 - Client (must be clicked Logs)
+     *                      1 - Pages
+     *                      2 - Banners
+     *                      3 - Translations
+     *                      4 - Users
+     *                      5 - Locales
+     *
      */
     public void clickOnNavigationItem(int navItemNumber) {
         List<WebElement> navItemList = web.getElements("navigationItemList");
-        // must opened 'Logs' items
         if (navItemNumber == 8 || navItemNumber == 9) {
-            // clicked on 'Logs' item
             navItemList.get(6).click();
             web.waitElementToBeClickable(navItemList.get(navItemNumber - 1));
         } else {
             navItemList.get(navItemNumber - 1).click();
         }
     }
+
+    public void clickOnUpperMenuItemTopLeftSide(String element){
+        web.clickElement(element);
+    }
+
+    /**
+     * Get text from element with helping javascript executor
+     *
+     * @see {@link JavascriptExecutor} and {@link JavascriptExecutor#executeScript(String, Object...)}
+     */
+    public String jsGetText(String elementID){
+        return web.getTextJS(elementID);
+    }
+
+    public boolean isButtonPresent(String button){
+        return web.isElementPresent(button);
+    }
+
+    public void clearDataInField(String field, int num){
+        web.clear(field+num);
+    }
+
+    public boolean isPopupAlertPresent(String alert, int num) {
+        return web.isElementPresent(alert+num);
+    }
+
+
 }

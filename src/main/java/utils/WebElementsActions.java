@@ -181,6 +181,15 @@ public class WebElementsActions {
     }
 
     /**
+     *
+     *
+     * @param buttonLocator
+     * @return
+     */
+    public boolean isButtonEnable(String buttonLocator) {
+        return driverWrapper.findElement(config.getLocator(buttonLocator)).isEnabled();
+    }
+    /**
      * Click button if this operation possible
      *
      * @param buttonLocator search button locator for click
@@ -560,6 +569,16 @@ public class WebElementsActions {
         JavascriptExecutor javascriptExecutor = (JavascriptExecutor) driverWrapper.getOriginalDriver();
         // Vertical scroll - up by 100  pixels
         javascriptExecutor.executeScript("window.scrollBy(0," + valuePixels + ")", "");
+    }
+
+    /**
+     * Get text from locator with helping javascript executor
+     *
+     * @see {@link JavascriptExecutor} and {@link JavascriptExecutor#executeScript(String, Object...)}
+     */
+    public String getTextJS(String locatorID) {
+        JavascriptExecutor js = (JavascriptExecutor) driverWrapper.getOriginalDriver();
+        return String.valueOf(js.executeScript("return document.getElementsByTagName('input')."+locatorID+".value;"));
     }
 
     /**

@@ -42,7 +42,7 @@ public class LoginTests extends Fixture {
     public void submitEmptyLoginForm() {
         cms.loginPage.inputUserNameAndPasswordAndClearFields(INVALID_NAME, INVALID_PASSWORD);
         cms.loginPage.clickLoginButton();
-        Assert.assertEquals(cms.loginPage.getTextFromElement(), "SIGN IN TO CONTINUE.");
+        Assert.assertEquals(cms.loginPage.getTextFromElement("signInToContinue"), "SIGN IN TO CONTINUE.");
     }
 
     @Test(priority = 5, dependsOnMethods = {"openWebSite"})
