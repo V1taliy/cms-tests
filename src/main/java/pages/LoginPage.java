@@ -1,16 +1,17 @@
 package pages;
 
 import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
 import utils.PropertyLoader;
 import utils.WebDriverWrapper;
 
 public class LoginPage extends AbstractPage {
 
     private static final Logger log = Logger.getLogger(LoginPage.class);
-    private static final String DEV_URL = PropertyLoader.loadProperty("site.url");
+    private static final String LOGIN_URL = PropertyLoader.loadProperty("login.url");
 
     public LoginPage(WebDriverWrapper driverWrapper) {
-        super(driverWrapper, DEV_URL);
+        super(driverWrapper, LOGIN_URL);
     }
 
     public boolean openLoginPage() {
@@ -51,7 +52,9 @@ public class LoginPage extends AbstractPage {
      * Click login button
      */
     public void clickLoginButton() {
-        web.clickButton("loginButton");
+        driverWrapper.findElement(By.xpath(".//button[contains(@class, 'btn')]")).click();
+//        web.moveToElementAndClick("loginButton",);
+//        web.clickBtn("loginButton");
     }
 
     /**
@@ -68,13 +71,22 @@ public class LoginPage extends AbstractPage {
         web.waitElementToBeVisibility("alertInvalidUserOrPass");
     }
 
-    public void waitInvisibilityLoader() {
-        web.waitDisappearElement("apisSystemLoader");
+    /**
+     * This method get text from locator
+     *
+     * @return true if get text from locator, otherwise false
+     */
+    public String getTextFromElement(){
+        return web.getTextFromElement("signInToContinue");
     }
 
-    public void waitInvisibilityPanelBody() {
+    public void waitInvisibilityLoader() {
+        web.waitDisappearElement("AraneumLoader");
+    }
+
+    public void waitInvisibilityLoginForm() {
         web.waitDisappearElement("loginForm",
-                Integer.parseInt(PropertyLoader.loadProperty("wait.timeout1sec")));
+                Integer.parseInt(PropertyLoader.loadProperty("wait.timeout3sec")));
     }
 
     /**
@@ -85,13 +97,18 @@ public class LoginPage extends AbstractPage {
      */
     public boolean isFieldRequiredUserNameTextPresent() {
         return web.isElementPresent("fieldRequiredUserNameText") &&
-                web.isElementPresent("fieldRequiredPasswordText");
+               web.isElementPresent("fieldRequiredPasswordText");
     }
 
     public String getPageURL() {
         return getCurrentPageURL();
     }
 
+    /**
+     * Check is Login Form present on a page
+     *
+     * @return true if Login Form present, otherwise - false
+     */
     public boolean isLoginFormPresent() {
         return web.isElementPresent("loginForm");
     }

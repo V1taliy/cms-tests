@@ -155,6 +155,16 @@ public class WebElementsActions {
     }
 
     /**
+     * This method get text from the locator
+     *
+     * @param elementLocator search element locator for click
+     * @throws NoSuchElementException If the locator cannot found
+     */
+    public String getTextFromElement(String elementLocator) throws NoSuchElementException{
+        return driverWrapper.findElement(config.getLocator(elementLocator)).getText();
+    }
+
+    /**
      * Click a button
      *
      * @param buttonLocator search button locator for click
@@ -162,6 +172,11 @@ public class WebElementsActions {
      */
     public void clickButton(String buttonLocator) throws NoSuchElementException {
         driverWrapper.findElement(config.getLocator(buttonLocator)).click();
+        log.info(String.format("click on button < %s >", buttonLocator));
+    }
+
+    public void clickBtn(String buttonLocator) throws NoSuchElementException {
+        driverWrapper.findElement(config.getLocator(buttonLocator)).submit();
         log.info(String.format("click on button < %s >", buttonLocator));
     }
 
