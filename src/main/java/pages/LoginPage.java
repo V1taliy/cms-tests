@@ -69,15 +69,6 @@ public class LoginPage extends AbstractPage {
         web.waitElementToBeVisibility("alertInvalidUserOrPass");
     }
 
-    /**
-     * This method get text from locator
-     *
-     * @return true if get text from locator, otherwise false
-     */
-    public String getTextFromElement(String element){
-        return web.getTextFromElement(element);
-    }
-
     public void waitInvisibilityLoader() {
         web.waitDisappearElement("AraneumLoader");
     }

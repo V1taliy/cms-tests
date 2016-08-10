@@ -24,24 +24,27 @@ public class LeftSide extends Fixture {
     }
 
     @Test(priority = 2, dependsOnMethods = {"openWebSiteAndLogin"})
-    public void clickOnHamburgerIcon() {
+    public void clickOnHamburgerIcon() throws InterruptedException {
+        Thread.sleep(4000);
         cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviHamburger");
-        Assert.assertEquals(cms.loginPage.getTextFromElement("siteManager"), "Site manager");
+        Thread.sleep(2000);
+        Assert.assertEquals(cms.web.getTextFromElement("siteManager"), "Site manager");
     }
 
     @Test(priority = 3, dependsOnMethods = {"openWebSiteAndLogin"})
-    public void clickOnHamburgerIconAgain() {
+    public void clickOnHamburgerIconAgain() throws InterruptedException {
         cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviHamburger");
-        Assert.assertEquals(cms.loginPage.getTextFromElement("siteManager"), "");
+        Thread.sleep(2000);
+        Assert.assertEquals(cms.web.getTextFromElement("siteManager"), "");
     }
 
     @Test(priority = 4, dependsOnMethods = {"openWebSiteAndLogin"})
     public void clickOnUserIcon() throws InterruptedException {
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviHamburger");
         cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviUser");
-        Thread.sleep(1000);
-        Assert.assertEquals(cms.loginPage.getTextFromElement("welcomeMessage"), "Welcome AdminFirstName AdminLastName");
-        Assert.assertEquals(cms.loginPage.getTextFromElement("emailUserBlock"), "araneum.dev.site@gmail.com");
+        cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviHamburger");
+        Thread.sleep(2000);
+        Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Welcome AdminFirstName AdminLastName");
+        Assert.assertEquals(cms.web.getTextFromElement("emailUserBlock"), "araneum.dev.site@gmail.com");
     }
 
     @Test(priority = 5, dependsOnMethods = {"openWebSiteAndLogin"})
@@ -67,5 +70,89 @@ public class LeftSide extends Fixture {
             Assert.assertTrue(cms.mainPage.isPopupAlertPresent("modalWinPopupAlert", i));
         }
         Assert.assertFalse(cms.web.isButtonEnable("modalWinSaveBtn"));
+        cms.web.clickButton("modalWinCancelBtn");
+    }
+
+    @Test(priority = 7, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void shortUserName() throws InterruptedException {
+        Thread.sleep(2000);
+        cms.mainPage.clickOnUpperMenuItemTopLeftSide("profilePicture");
+        Thread.sleep(2000);
+        cms.web.clearAndInput("modalWinField1", "T");
+        Assert.assertEquals(cms.web.getTextFromElement("modalWinPopupAlert1a"), "Username is too short");
+    }
+
+    @Test(priority = 8, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void validUserName() {
+        cms.web.clearAndInput("modalWinField1", "admin");
+        Assert.assertFalse(cms.mainPage.isPopupAlertPresent("modalWinPopupAlert", 1));
+    }
+
+    @Test(priority = 9, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void invalidFirstLastName() {
+        for (int i=2;i<4;i++){
+            cms.web.clearAndInput("modalWinField"+i, "!@#$%");
+            Assert.assertEquals(cms.web.getTextFromElement("modalWinPopupAlert"+i+"a"), "Field should contain letters only");
+        }
+    }
+
+    @Test(priority = 10, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void invalidEmailSpecialSymbols() {
+        cms.web.clearAndInput("modalWinField4", "1nval!d@#ma$.d*%");
+        Assert.assertEquals(cms.web.getTextFromElement("modalWinPopupAlert4a"), "Not valid email");
+    }
+
+    @Test(priority = 11, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void invalidEmailWithOutAtCommercial() {
+        cms.web.clearAndInput("modalWinField4", "invalid.email.yahoo.com");
+        Assert.assertEquals(cms.web.getTextFromElement("modalWinPopupAlert4a"), "Not valid email");
+    }
+
+    @Test(priority = 12, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void invalidEmailWithOutDomain() {
+        cms.web.clearAndInput("modalWinField4", "invalid@email");
+        Assert.assertEquals(cms.web.getTextFromElement("modalWinPopupAlert4a"), "Not valid email");
+    }
+
+    @Test(priority = 13, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void validEmail() {
+        cms.web.clearAndInput("modalWinField4", "validemail@yahoo.com");
+        Assert.assertFalse(cms.mainPage.isPopupAlertPresent("modalWinPopupAlert", 4));
+    }
+
+    @Test(priority = 14, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void clickCancel() {
+        cms.web.clickButton("modalWinCancelBtn");
+        Assert.assertTrue(cms.web.isElementPresent("profilePicture"));
+    }
+    @Test(priority = 15, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void changeFirsLastName() throws InterruptedException {
+        Thread.sleep(2000);
+        cms.mainPage.clickOnUpperMenuItemTopLeftSide("profilePicture");
+        Thread.sleep(2000);
+        cms.web.clearAndInput("modalWinField2", "changedName");
+        cms.web.clearAndInput("modalWinField3", "changedSurname");
+        cms.web.clickButton("modalWinSaveBtn");
+        Thread.sleep(4000);
+        cms.mainPage.clickOnUpperMenuItemTopLeftSide("profilePicture");
+        Thread.sleep(2000);
+        Assert.assertEquals(cms.mainPage.jsGetText("firstName"), "changedName");
+        Assert.assertEquals(cms.mainPage.jsGetText("lastName"), "changedSurname");
+        cms.web.clearAndInput("modalWinField2", "AdminFirstName");
+        cms.web.clearAndInput("modalWinField3", "AdminLastName");
+        cms.web.clickButton("modalWinSaveBtn");
+    }
+
+    @Test(priority = 16, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void changeLanguage() throws InterruptedException {
+        Thread.sleep(4000);
+        cms.web.clickElement("naviLanguage");
+        cms.web.clickElement("naviLanguageRu");
+        Thread.sleep(1500);
+        Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Добро пожаловать admin");
+        cms.web.clickElement("naviLanguage");
+        cms.web.clickElement("naviLanguageEn");
+        Thread.sleep(1500);
+        Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Welcome admin");
     }
 }

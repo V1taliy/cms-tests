@@ -181,7 +181,8 @@ public class WebElementsActions {
     }
 
     /**
-     *
+     *This method return true if button is enable or
+     * false otherwise
      *
      * @param buttonLocator
      * @return
