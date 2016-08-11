@@ -21,9 +21,11 @@ public class Fixture {
     private static final Logger log = Logger.getLogger(Fixture.class);
     public static WebDriverWrapper driverWrapper;
     public static Cms cms;
+    public static final boolean isGridEnabled = Boolean.parseBoolean(PropertyLoader.loadProperty("grid.enable"));
 
     @BeforeSuite
     public void startBrowser() {
+        if (isGridEnabled == true) {
         driverWrapper = new WebDriverWrapper(WebDriverFactory.getInstance());
         driverWrapper.manage().timeouts().implicitlyWait(Long.parseLong(impWait), TimeUnit.SECONDS);
         try {
@@ -32,6 +34,17 @@ public class Fixture {
             e.printStackTrace();
         }
         log.info(String.format("start test suit execution"));
+        } else if (isGridEnabled == false){
+                driverWrapper = WebDriverFactory.initDriver(PropertyLoader.loadProperty("browser.name"));
+                driverWrapper.manage().window().maximize();
+                driverWrapper.manage().timeouts().implicitlyWait(Long.parseLong(impWait), TimeUnit.SECONDS);
+                try {
+                    cms = new Cms(driverWrapper);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                log.info("start test suit execution");
+        }
     }
 
     @AfterSuite

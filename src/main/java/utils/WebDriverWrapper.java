@@ -21,6 +21,7 @@ public class WebDriverWrapper implements WebDriver, TakesScreenshot {
      */
     public WebDriverWrapper(WebDriver driver) {
         this.driver = driver;
+        WebDriverWrapper.driver = driver;
     }
 
     /**
