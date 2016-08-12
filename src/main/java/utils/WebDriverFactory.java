@@ -4,7 +4,9 @@ import net.anthavio.phanbedder.Phanbedder;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Platform;
+import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -25,6 +27,8 @@ import java.util.Map;
 
 public class WebDriverFactory {
 
+    public static WebDriverWrapper driverWrapper;
+
     private static final Logger log = Logger.getLogger(WebDriverFactory.class);
 
     public static final String browserName = PropertyLoader.loadProperty("browser.name");
@@ -42,6 +46,9 @@ public class WebDriverFactory {
     * Browsers constants
     * if necessary, you can add new browsers
     * */
+
+    private static final String FIREFOXproxy = "firefoxproxy";
+    private static final String CHROMEproxy = "chromeproxy";
     private static final String FIREFOX = "firefox";
     private static final String CHROME = "chrome";
     private static final String INTERNET_EXPLORER = "internet explorer";
@@ -56,13 +63,17 @@ public class WebDriverFactory {
     private static final String DEVICE_NAME = PropertyLoader.loadProperty("device.name");
     public static WebDriver driver;
     private static GridInitialization gridInit = null;
+    private static DesiredCapabilities capabilities = new DesiredCapabilities();
+    private static final String  sslProxy = PropertyLoader.loadProperty("proxy");
+    private static String DeviceName = "Apple iPhone 5";
 
     public WebDriverFactory() {
     }
 
     public static WebDriver getInstance() {
+
         gridInit = new GridInitialization(browserName, browserVersion, platform);
-        DesiredCapabilities capabilities = new DesiredCapabilities();
+
         capabilities.setJavascriptEnabled(true);
         log.info("<--- start work web_driver factory --->");
         setBrowserAndVersion(capabilities);
@@ -75,6 +86,49 @@ public class WebDriverFactory {
         driver.manage().window().maximize();
         log.info(String.format("Screen resolution - %s", driver.manage().window().getSize()));
         return driver;
+
+    }
+
+    public static WebDriverWrapper initDriver(String browserName) {
+
+        addProxyCapabilities(capabilities, sslProxy);
+
+        if (FIREFOX.equals(browserName)) {
+            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
+            driverWrapper = new WebDriverWrapper(new FirefoxDriver());
+        } else if (FIREFOXproxy.equals(browserName)) {
+            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
+            driverWrapper = new WebDriverWrapper(new FirefoxDriver(WebDriverFactory.capabilities));
+        }else if (CHROME.equals(browserName)) {
+            System.setProperty("webdriver.chrome.driver", CHROME_PATH);
+            ChromeOptions options = new ChromeOptions();
+            driverWrapper = new WebDriverWrapper(new ChromeDriver(options));
+
+        } else if (CHROMEproxy.equals(browserName)) {
+            System.setProperty("webdriver.chrome.driver", CHROME_PATH);
+            ChromeOptions options = new ChromeOptions();
+            options.addArguments("--proxy-server=http://" + sslProxy);
+            driverWrapper = new WebDriverWrapper(new ChromeDriver(options));
+        }else if (MOBILE_EMULATOR.equals(browserName)) {
+
+            System.setProperty("webdriver.chrome.driver", CHROME_PATH);
+
+            Map<String, String> mobileEmulation = new HashMap<String, String>();
+            mobileEmulation.put("deviceName", DeviceName);
+
+            Map<String, Object> chromeOptions = new HashMap<String, Object>();
+            chromeOptions.put("mobileEmulation", mobileEmulation);
+
+            WebDriverFactory.capabilities = DesiredCapabilities.chrome();
+            WebDriverFactory.capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+
+            driverWrapper = new WebDriverWrapper(new ChromeDriver(WebDriverFactory.capabilities));
+        } else {
+            Assert.fail("invalid driver name");
+        }
+        driverWrapper.manage().deleteAllCookies();
+        driverWrapper.manage().window().maximize();
+        return driverWrapper;
     }
 
     /**
@@ -91,7 +145,7 @@ public class WebDriverFactory {
                     Arrays.asList("--ignore-certificate-errors"));
             capabilities.setCapability(CapabilityType.SUPPORTS_APPLICATION_CACHE, true);
         } else if (FIREFOX.equals(browserName)) {
-//            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
+            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
             capabilities.setBrowserName(browserName);
             capabilities = DesiredCapabilities.firefox();
             capabilities.setCapability(CapabilityType.TAKES_SCREENSHOT, true);
@@ -135,22 +189,25 @@ public class WebDriverFactory {
      *
      * @return hub url {@link URL}
      */
+
+
     public static URL getHubURL() {
         URL hubUrl = null;
-        try {
-            hubUrl = new URL(gridHub);
-            log.info("<--- HUB_URL = " + gridHub + " --->");
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        // In case there is no Hub
-        if (hubUrl == null) {
-            log.error("HUBURL == null!\n");
-            Assert.fail("hub URL == null");
-            return null;
-        } else {
-            return hubUrl;
-        }
+
+            try {
+                hubUrl = new URL(gridHub);
+                log.info("<--- HUB_URL = " + gridHub + " --->");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            // In case there is no Hub
+            if (hubUrl == null) {
+                log.error("HUBURL == null!\n");
+                Assert.fail("hub URL == null");
+                return null;
+            } else {
+                return hubUrl;
+            }
     }
 
     /**
@@ -168,6 +225,15 @@ public class WebDriverFactory {
         } else {
             capabilities.setPlatform(Platform.ANY);
         }
+    }
+    public static DesiredCapabilities addProxyCapabilities(DesiredCapabilities capability, String sslProxy) {
+        Proxy proxy = new Proxy();
+        proxy.setProxyType(Proxy.ProxyType.MANUAL);
+        proxy.setSslProxy(sslProxy);
+
+        capability.setCapability(CapabilityType.PROXY, proxy);
+        capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+        return capability;
     }
 
 }
