@@ -11,37 +11,39 @@ public class LeftSide extends Fixture {
 
     private static final String ADMIN_NAME = PropertyLoader.loadProperty("admin.name");
     private static final String ADMIN_PASSWORD = PropertyLoader.loadProperty("admin.password");
+    private static final int newImpWait = 300;
 
     @Test(priority = 1)
     public void openWebSiteAndLogin() {
         cms.loginPage.openLoginPage();
         cms.loginPage.waitInvisibilityLoader();
+        impWait = String.valueOf(newImpWait);
+        driverWrapper.manage().timeouts().implicitlyWait(Long.parseLong(impWait), TimeUnit.MILLISECONDS);
         cms.loginPage.inputUserName(ADMIN_NAME);
         cms.loginPage.inputPassword(ADMIN_PASSWORD);
         cms.loginPage.clickLoginButton();
         Assert.assertEquals(driverWrapper.getTitle(), "Admin :: Araneum - Multisite manage tool");
-        driverWrapper.manage().timeouts().implicitlyWait(Long.parseLong(impWait), TimeUnit.MILLISECONDS);
     }
 
     @Test(priority = 2, dependsOnMethods = {"openWebSiteAndLogin"})
     public void clickOnHamburgerIcon() throws InterruptedException {
         Thread.sleep(4000);
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviHamburger");
-        Thread.sleep(2000);
+//        cms.mainPage.clickOnUpperMenuItem("naviHamburger");
+//        Thread.sleep(2000);
         Assert.assertEquals(cms.web.getTextFromElement("siteManager"), "Site manager");
     }
 
     @Test(priority = 3, dependsOnMethods = {"openWebSiteAndLogin"})
     public void clickOnHamburgerIconAgain() throws InterruptedException {
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviHamburger");
+        cms.mainPage.clickOnUpperMenuItem("naviHamburger");
         Thread.sleep(2000);
         Assert.assertEquals(cms.web.getTextFromElement("siteManager"), "");
     }
 
     @Test(priority = 4, dependsOnMethods = {"openWebSiteAndLogin"})
     public void clickOnUserIcon() throws InterruptedException {
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviUser");
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("naviHamburger");
+        cms.mainPage.clickOnUpperMenuItem("naviUser");
+        cms.mainPage.clickOnUpperMenuItem("naviHamburger");
         Thread.sleep(2000);
         Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Welcome AdminFirstName AdminLastName");
         Assert.assertEquals(cms.web.getTextFromElement("emailUserBlock"), "araneum.dev.site@gmail.com");
@@ -49,7 +51,7 @@ public class LeftSide extends Fixture {
 
     @Test(priority = 5, dependsOnMethods = {"openWebSiteAndLogin"})
     public void clickOnProfilePicture() throws InterruptedException {
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("profilePicture");
+        cms.mainPage.clickOnUpperMenuItem("profilePicture");
         Thread.sleep(2000);
         Assert.assertEquals(cms.mainPage.jsGetText("username"), "admin");
         Assert.assertEquals(cms.mainPage.jsGetText("firstName"), "AdminFirstName");
@@ -63,10 +65,10 @@ public class LeftSide extends Fixture {
     @Test(priority = 6, dependsOnMethods = {"openWebSiteAndLogin"})
     public void clearDataInModalWindow() throws InterruptedException {
         Thread.sleep(2000);
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("profilePicture");
+        cms.mainPage.clickOnUpperMenuItem("profilePicture");
         Thread.sleep(2000);
         for (int i=1;i<5;i++){
-            cms.mainPage.clearDataInField("modalWinField", i);
+            cms.mainPage.clearDataInField("modalWinField", i, "!");
             Assert.assertTrue(cms.mainPage.isPopupAlertPresent("modalWinPopupAlert", i));
         }
         Assert.assertFalse(cms.web.isButtonEnable("modalWinSaveBtn"));
@@ -76,7 +78,7 @@ public class LeftSide extends Fixture {
     @Test(priority = 7, dependsOnMethods = {"openWebSiteAndLogin"})
     public void shortUserName() throws InterruptedException {
         Thread.sleep(2000);
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("profilePicture");
+        cms.mainPage.clickOnUpperMenuItem("profilePicture");
         Thread.sleep(2000);
         cms.web.clearAndInput("modalWinField1", "T");
         Assert.assertEquals(cms.web.getTextFromElement("modalWinPopupAlert1a"), "Username is too short");
@@ -92,7 +94,7 @@ public class LeftSide extends Fixture {
     public void invalidFirstLastName() {
         for (int i=2;i<4;i++){
             cms.web.clearAndInput("modalWinField"+i, "!@#$%");
-            Assert.assertEquals(cms.web.getTextFromElement("modalWinPopupAlert"+i+"a"), "Field should contain letters only");
+            Assert.assertEquals(cms.web.getTextFromElement("modalWinPopupAlert"+i), "Shouldn't be blank and only letters are allowed");
         }
     }
 
@@ -128,13 +130,13 @@ public class LeftSide extends Fixture {
     @Test(priority = 15, dependsOnMethods = {"openWebSiteAndLogin"})
     public void changeFirsLastName() throws InterruptedException {
         Thread.sleep(2000);
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("profilePicture");
+        cms.mainPage.clickOnUpperMenuItem("profilePicture");
         Thread.sleep(2000);
         cms.web.clearAndInput("modalWinField2", "changedName");
         cms.web.clearAndInput("modalWinField3", "changedSurname");
         cms.web.clickButton("modalWinSaveBtn");
         Thread.sleep(4000);
-        cms.mainPage.clickOnUpperMenuItemTopLeftSide("profilePicture");
+        cms.mainPage.clickOnUpperMenuItem("profilePicture");
         Thread.sleep(2000);
         Assert.assertEquals(cms.mainPage.jsGetText("firstName"), "changedName");
         Assert.assertEquals(cms.mainPage.jsGetText("lastName"), "changedSurname");
@@ -149,10 +151,10 @@ public class LeftSide extends Fixture {
         cms.web.clickElement("naviLanguage");
         cms.web.clickElement("naviLanguageRu");
         Thread.sleep(1500);
-        Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Добро пожаловать admin");
+        Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Добро пожаловать AdminFirstName AdminLastName");
         cms.web.clickElement("naviLanguage");
         cms.web.clickElement("naviLanguageEn");
         Thread.sleep(1500);
-        Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Welcome admin");
+        Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Welcome AdminFirstName AdminLastName");
     }
 }

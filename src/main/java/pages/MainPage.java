@@ -1,6 +1,7 @@
 package pages;
 
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import utils.WebDriverWrapper;
@@ -40,10 +41,13 @@ public class MainPage extends AbstractPage{
         }
     }
 
-    public void clickOnUpperMenuItemTopLeftSide(String element){
+    public void clickOnUpperMenuItem(String element){
         web.clickElement(element);
     }
 
+    public void searchDismiss(String element){
+        web.clickElement(element);
+    }
     /**
      * Get text from element with helping javascript executor
      *
@@ -57,7 +61,8 @@ public class MainPage extends AbstractPage{
         return web.isElementPresent(button);
     }
 
-    public void clearDataInField(String field, int num){
+    public void clearDataInField(String field, int num, String text){
+        web.clearAndInput(field+num, text);
         web.clear(field+num);
     }
 
@@ -65,5 +70,8 @@ public class MainPage extends AbstractPage{
         return web.isElementPresent(alert+num);
     }
 
+    public String getColor() {
+        return driverWrapper.findElement(By.cssSelector(".nav-wrapper")).getCssValue("background-color");
+    }
 
 }
