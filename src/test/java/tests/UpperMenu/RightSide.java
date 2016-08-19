@@ -67,4 +67,27 @@ public class RightSide extends Fixture {
         Assert.assertEquals(cms.mainPage.getColor(), "rgba(43, 149, 122, 1)");
     }
 
+    @Test(priority = 7, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void layoutBoxedOn() throws InterruptedException {
+        cms.web.clickElement("toggleBoxed");
+        Thread.sleep(1000);
+        Assert.assertTrue(cms.web.isElementPresent("toggleBoxedOn"));
+        cms.web.clickElement("toggleBoxed");
+    }
+
+    @Test(priority = 8, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void asideCollapsedOn() throws InterruptedException {
+        cms.web.clickElement("toggleCollapsed");
+        Thread.sleep(1000);
+        Assert.assertTrue(cms.web.isElementPresent("toggleCollapsedOn"));
+        cms.web.clickElement("toggleCollapsed");
+    }
+
+    @Test(priority = 9, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void asideFloatOn() throws InterruptedException {
+        cms.web.clickElement("toggleFloated");
+        Thread.sleep(1000);
+        Assert.assertTrue(cms.web.isElementPresent("toggleFloatedOn"));
+        cms.web.clickElement("toggleFloated");
+    }
 }
