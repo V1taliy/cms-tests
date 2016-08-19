@@ -1,12 +1,9 @@
 package tests.UpperMenu;
 
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import sun.awt.windows.ThemeReader;
 import tests.Fixture;
 import utils.PropertyLoader;
-
 import java.util.concurrent.TimeUnit;
 
 public class RightSide extends Fixture {
@@ -15,7 +12,7 @@ public class RightSide extends Fixture {
     private static final int newImpWait = 300;
 
     @Test(priority = 1)
-    public void openWebSiteAndLogin() throws InterruptedException {
+    public static void openWebSiteAndLogin() throws InterruptedException {
         cms.loginPage.openLoginPage();
         cms.loginPage.waitInvisibilityLoader();
         impWait = String.valueOf(newImpWait);
@@ -89,5 +86,16 @@ public class RightSide extends Fixture {
         Thread.sleep(1000);
         Assert.assertTrue(cms.web.isElementPresent("toggleFloatedOn"));
         cms.web.clickElement("toggleFloated");
+    }
+
+    @Test(priority = 10, dependsOnMethods = {"openWebSiteAndLogin"})
+    public void checkingSaveSettings() throws InterruptedException {
+        cms.web.clickElement("themeColorRed");
+        cms.web.clickElement("toggleBoxed");
+        cms.web.clickElement("toggleCollapsed");
+        cms.web.clickElement("toggleFloated");
+        Thread.sleep(2000);
+        cms.mainPage.clickLogoutButton();
+        cms.mainPage.checkingSaveSettingsInAnotherBrowser();
     }
 }

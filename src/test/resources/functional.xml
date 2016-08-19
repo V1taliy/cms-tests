@@ -1,0 +1,26 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="FunctionalSuite" verbose="1">
+    <test name="Login Tests">
+
+        <classes>
+            <class name="tests.LoginTests"/>
+        </classes>
+
+    </test>
+
+    <test name="Upper Menu Left Side">
+
+        <classes>
+            <class name="tests.UpperMenu.LeftSide"/>
+        </classes>
+
+    </test>
+
+    <test name="Upper Menu Right Side">
+
+        <classes>
+            <class name="tests.UpperMenu.RightSide"/>
+        </classes>
+
+    </test>
+</suite>

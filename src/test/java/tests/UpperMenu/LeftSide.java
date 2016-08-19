@@ -28,8 +28,6 @@ public class LeftSide extends Fixture {
     @Test(priority = 2, dependsOnMethods = {"openWebSiteAndLogin"})
     public void clickOnHamburgerIcon() throws InterruptedException {
         Thread.sleep(4000);
-//        cms.mainPage.clickOnUpperMenuItem("naviHamburger");
-//        Thread.sleep(2000);
         Assert.assertEquals(cms.web.getTextFromElement("siteManager"), "Site manager");
     }
 
@@ -156,5 +154,6 @@ public class LeftSide extends Fixture {
         cms.web.clickElement("naviLanguageEn");
         Thread.sleep(1500);
         Assert.assertEquals(cms.web.getTextFromElement("welcomeMessage"), "Welcome AdminFirstName AdminLastName");
+        cms.mainPage.clickLogoutButton();
     }
 }
