@@ -1,13 +1,11 @@
 package tests.UpperMenu;
 
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriverException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import tests.Fixture;
 import utils.PropertyLoader;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class RightSide extends Fixture {
     private static final String ADMIN_NAME = PropertyLoader.loadProperty("admin.name");

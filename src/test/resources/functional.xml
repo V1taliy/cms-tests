@@ -5,6 +5,13 @@
         <classes>
             <class name="tests.LoginTests"/>
         </classes>
+    </test>
+
+    <test name="Upper Menu Right Side">
+
+            <classes>
+                <class name="tests.UpperMenu.RightSide"/>
+            </classes>
 
     </test>
 
@@ -16,11 +23,5 @@
 
     </test>
 
-    <test name="Upper Menu Right Side">
 
-        <classes>
-            <class name="tests.UpperMenu.RightSide"/>
-        </classes>
-
-    </test>
 </suite>
