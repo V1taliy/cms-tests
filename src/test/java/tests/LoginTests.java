@@ -59,7 +59,7 @@ public class LoginTests extends Fixture {
     public void loginAsAdminUsingEmail() throws InterruptedException {
         cms.loginPage.inputUserName(ADMIN_EMAIL);
         cms.loginPage.inputPassword(ADMIN_PASSWORD);
-        Thread.sleep(1000);
+        Thread.sleep(5000);
         cms.loginPage.clickLoginButton();
         Assert.assertEquals(driverWrapper.getTitle(), "Admin :: Araneum - Multisite manage tool");
         cms.mainPage.clickLogoutButton();
@@ -69,7 +69,7 @@ public class LoginTests extends Fixture {
     public void loginAsAdmin() throws InterruptedException {
         cms.loginPage.inputUserName(ADMIN_NAME);
         cms.loginPage.inputPassword(ADMIN_PASSWORD);
-        Thread.sleep(2000);
+        Thread.sleep(3000);
         cms.loginPage.clickLoginButton();
         Assert.assertEquals(driverWrapper.getTitle(), "Admin :: Araneum - Multisite manage tool");
         cms.mainPage.clickLogoutButton();

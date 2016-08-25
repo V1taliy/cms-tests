@@ -420,7 +420,7 @@ public class WebElementsActions {
      */
     public boolean waitDisappearElement(String disappearLocator) throws NoSuchElementException, TimeoutException {
         WebDriverWait wait = new WebDriverWait(driverWrapper.getOriginalDriver(),
-                Long.parseLong(PropertyLoader.loadProperty("wait.timeout10sec")));
+                Long.parseLong(PropertyLoader.loadProperty("wait.timeout15sec")));
         return wait.until(ExpectedConditions.invisibilityOfElementLocated(config.getLocator(disappearLocator)));
     }
 
