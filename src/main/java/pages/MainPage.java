@@ -10,7 +10,6 @@ import org.testng.Assert;
 import utils.WebDriverWrapper;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class MainPage extends AbstractPage{
 

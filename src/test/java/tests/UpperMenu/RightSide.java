@@ -1,10 +1,13 @@
 package tests.UpperMenu;
 
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.WebDriverException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import tests.Fixture;
 import utils.PropertyLoader;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class RightSide extends Fixture {
     private static final String ADMIN_NAME = PropertyLoader.loadProperty("admin.name");
@@ -46,6 +49,27 @@ public class RightSide extends Fixture {
     public void clickSettingsIcon() {
         cms.mainPage.clickOnUpperMenuItem("settingsIcon");
         Assert.assertTrue(cms.web.isElementPresent("settingsMenu"));
+        try {
+            if (cms.web.isElementPresent("toggleBoxedOn")) {
+                cms.web.clickElement("toggleBoxed");
+            }
+        } catch (WebDriverException e) {
+            System.out.println("toggleBoxedOff");
+        }
+        try {
+            if (cms.web.isElementPresent("toggleCollapsedOn")) {
+                cms.web.clickElement("toggleCollapsed");
+            }
+        } catch (WebDriverException e) {
+            System.out.println("toggleCollapsedOff");
+        }
+        try {
+            if (cms.web.isElementPresent("toggleFloatedOn")) {
+                cms.web.clickElement("toggleFloated");
+            }
+        } catch (WebDriverException e) {
+            System.out.println("toggleFloatedOff");
+        }
     }
 
     @Test(priority = 5, dependsOnMethods = {"openWebSiteAndLogin"})
