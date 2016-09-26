@@ -1,16 +1,21 @@
 package tests.UpperMenu;
 
+import org.apache.commons.logging.Log;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriverException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import tests.Fixture;
 import utils.PropertyLoader;
+import utils.WebElementsActions;
+
 import java.util.concurrent.TimeUnit;
 
 public class RightSide extends Fixture {
     private static final String ADMIN_NAME = PropertyLoader.loadProperty("admin.name");
     private static final String ADMIN_PASSWORD = PropertyLoader.loadProperty("admin.password");
     private static final int newImpWait = 300;
+    private final static Logger log = Logger.getLogger(WebElementsActions.class);
 
     @Test(priority = 1)
     public static void openWebSiteAndLogin() throws InterruptedException {
@@ -52,21 +57,21 @@ public class RightSide extends Fixture {
                 cms.web.clickElement("toggleBoxed");
             }
         } catch (WebDriverException e) {
-            System.out.println("toggleBoxedOff");
+            log.info("The toggle Boxed is off");
         }
         try {
             if (cms.web.isElementPresent("toggleCollapsedOn")) {
                 cms.web.clickElement("toggleCollapsed");
             }
         } catch (WebDriverException e) {
-            System.out.println("toggleCollapsedOff");
+            log.info("The toggle Collapsed is off");
         }
         try {
             if (cms.web.isElementPresent("toggleFloatedOn")) {
                 cms.web.clickElement("toggleFloated");
             }
         } catch (WebDriverException e) {
-            System.out.println("toggleFloatedOff");
+            log.info("The toggle Floated is off");
         }
     }
 
@@ -120,4 +125,5 @@ public class RightSide extends Fixture {
         cms.mainPage.clickLogoutButton();
         cms.mainPage.checkingSaveSettingsInAnotherBrowser();
     }
+
 }
