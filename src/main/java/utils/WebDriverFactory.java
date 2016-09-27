@@ -4,13 +4,10 @@ import net.anthavio.phanbedder.Phanbedder;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Platform;
-import org.openqa.selenium.Proxy;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxBinary;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.CapabilityType;
@@ -27,15 +24,14 @@ import java.util.Map;
 
 public class WebDriverFactory {
 
-    public static WebDriverWrapper driverWrapper;
-
     private static final Logger log = Logger.getLogger(WebDriverFactory.class);
 
-    public static final String browserName = PropertyLoader.loadProperty("browser.name");
-    public static final String browserVersion = PropertyLoader.loadProperty("browser.version");
-    public static final String platform = PropertyLoader.loadProperty("browser.platform");
+    public static final String BROWSER_NAME = PropertyLoader.loadProperty("browser.name");
+    public static final String BROWSER_VERSION = PropertyLoader.loadProperty("browser.version");
+    public static final String PLATFORM = PropertyLoader.loadProperty("browser.platform");
 
-    public static final String gridHub = PropertyLoader.loadProperty("grid.hub");
+    public static final String GRID_HUB = PropertyLoader.loadProperty("grid.hub");
+    public static final boolean GRID_STATUS = Boolean.parseBoolean(PropertyLoader.loadProperty("grid.status"));
 
     /*Platform constants*/
     public static final String WINDOWS = PropertyLoader.loadProperty("platform.windows");
@@ -46,9 +42,6 @@ public class WebDriverFactory {
     * Browsers constants
     * if necessary, you can add new browsers
     * */
-
-    private static final String FIREFOXproxy = "firefoxproxy";
-    private static final String CHROMEproxy = "chromeproxy";
     private static final String FIREFOX = "firefox";
     private static final String CHROME = "chrome";
     private static final String INTERNET_EXPLORER = "internet explorer";
@@ -57,118 +50,125 @@ public class WebDriverFactory {
     private static final String PHANTOMJS = "phantomjs";
 
     private static final String FIREFOX_PATH = PropertyLoader.loadProperty("firefox.path");
+    private static final String GECKO_PATH = PropertyLoader.loadProperty("geckodriver.path");
     private static final String CHROME_PATH = PropertyLoader.loadProperty("chromedriver.path");
     private static final String PHANTOMJS_PATH = PropertyLoader.loadProperty("phantomjsdriver.path");
     private static final String INTERNET_EXPLORER_PATH = PropertyLoader.loadProperty("internetExplorer.path");
     private static final String DEVICE_NAME = PropertyLoader.loadProperty("device.name");
+
     public static WebDriver driver;
+    public static WebDriverWrapper driverWrapper;
+    public static DesiredCapabilities capabilities;
     private static GridInitialization gridInit = null;
-    private static DesiredCapabilities capabilities = new DesiredCapabilities();
-    private static final String  sslProxy = PropertyLoader.loadProperty("proxy");
-    private static String DeviceName = "Apple iPhone 5";
 
     public WebDriverFactory() {
     }
 
-    public static WebDriver getInstance() {
-
-        gridInit = new GridInitialization(browserName, browserVersion, platform);
-
+    public static WebDriver getGridInstance() {
+        gridInit = new GridInitialization(BROWSER_NAME, BROWSER_VERSION, PLATFORM);
+        capabilities = new DesiredCapabilities();
         capabilities.setJavascriptEnabled(true);
         log.info("<--- start work web_driver factory --->");
         setBrowserAndVersion(capabilities);
         log.info(String.format("<--- successful set up browser & version = %s --->", capabilities));
         setPlatform(capabilities);
-        log.info(String.format("<---successful set up platform = %s --->", capabilities));
+        log.info(String.format("<---successful set up PLATFORM = %s --->", capabilities));
         driver = new RemoteWebDriver(getHubURL(), capabilities);
         driver.manage().deleteAllCookies();
-        driver.manage().window().setSize(new Dimension(1920, 1080));
+//        driver.manage().window().setSize(new Dimension(1920, 1080));
         driver.manage().window().maximize();
         log.info(String.format("Screen resolution - %s", driver.manage().window().getSize()));
         return driver;
-
     }
 
-    public static WebDriverWrapper initDriver(String browserName) {
+    /**
+     * static method that returns the WebDriver
+     *
+     * @return new web driver
+     */
+    public static WebDriverWrapper initDriver() {
 
-        addProxyCapabilities(capabilities, sslProxy);
+        capabilities = new DesiredCapabilities();
 
-        if (FIREFOX.equals(browserName)) {
-            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
-            driverWrapper = new WebDriverWrapper(new FirefoxDriver());
-        } else if (FIREFOXproxy.equals(browserName)) {
-            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
-            driverWrapper = new WebDriverWrapper(new FirefoxDriver(WebDriverFactory.capabilities));
-        }else if (CHROME.equals(browserName)) {
+        if (FIREFOX.equals(BROWSER_NAME)) {
+
+//            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
+            System.setProperty("webdriver.gecko.driver", GECKO_PATH);
+            DesiredCapabilities desiredCapabilities = DesiredCapabilities.firefox();
+            desiredCapabilities.setCapability("marionette", true);
+            driverWrapper = new WebDriverWrapper(new FirefoxDriver(desiredCapabilities));
+
+        } else if (CHROME.equals(BROWSER_NAME)) {
+
             System.setProperty("webdriver.chrome.driver", CHROME_PATH);
             ChromeOptions options = new ChromeOptions();
             driverWrapper = new WebDriverWrapper(new ChromeDriver(options));
 
-        } else if (CHROMEproxy.equals(browserName)) {
-            System.setProperty("webdriver.chrome.driver", CHROME_PATH);
-            ChromeOptions options = new ChromeOptions();
-            options.addArguments("--proxy-server=http://" + sslProxy);
-            driverWrapper = new WebDriverWrapper(new ChromeDriver(options));
-        }else if (MOBILE_EMULATOR.equals(browserName)) {
+        } else if (MOBILE_EMULATOR.equals(BROWSER_NAME)) {
 
             System.setProperty("webdriver.chrome.driver", CHROME_PATH);
 
             Map<String, String> mobileEmulation = new HashMap<String, String>();
-            mobileEmulation.put("deviceName", DeviceName);
+            mobileEmulation.put("deviceName", DEVICE_NAME);
 
             Map<String, Object> chromeOptions = new HashMap<String, Object>();
             chromeOptions.put("mobileEmulation", mobileEmulation);
 
-            WebDriverFactory.capabilities = DesiredCapabilities.chrome();
-            WebDriverFactory.capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
+            capabilities = DesiredCapabilities.chrome();
+            capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
 
             driverWrapper = new WebDriverWrapper(new ChromeDriver(WebDriverFactory.capabilities));
+
         } else {
             Assert.fail("invalid driver name");
         }
+
         driverWrapper.manage().deleteAllCookies();
         driverWrapper.manage().window().maximize();
         return driverWrapper;
+
     }
 
     /**
      * Factory method to return a WebDriver instance given the browser to hit.
      *
-     * @param capabilities DesiredCapabilities object coming from getInstance().
+     * @param capabilities DesiredCapabilities object coming from getGridInstance().
      */
     public static void setBrowserAndVersion(DesiredCapabilities capabilities) {
-        if (CHROME.equals(browserName)) {
+        if (CHROME.equals(BROWSER_NAME)) {
             System.setProperty("webdriver.chrome.driver", CHROME_PATH);
-            capabilities.setBrowserName(browserName);
+            capabilities.setBrowserName(BROWSER_NAME);
             capabilities = DesiredCapabilities.chrome();
             capabilities.setCapability("chrome.switches",
                     Arrays.asList("--ignore-certificate-errors"));
             capabilities.setCapability(CapabilityType.SUPPORTS_APPLICATION_CACHE, true);
-        } else if (FIREFOX.equals(browserName)) {
-            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
-            capabilities.setBrowserName(browserName);
+        } else if (FIREFOX.equals(BROWSER_NAME)) {
+//            System.setProperty("webdriver.firefox.bin", FIREFOX_PATH);
+            System.setProperty("webdriver.gecko.driver", GECKO_PATH);
+            capabilities.setBrowserName(BROWSER_NAME);
             capabilities = DesiredCapabilities.firefox();
             capabilities.setCapability(CapabilityType.TAKES_SCREENSHOT, true);
             capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-        } else if (PHANTOMJS.equals(browserName)) {
-            capabilities.setBrowserName(browserName);
+            capabilities.setCapability("marionette", true);
+        } else if (PHANTOMJS.equals(BROWSER_NAME)) {
+            capabilities.setBrowserName(BROWSER_NAME);
             File phantomjs = Phanbedder.unpack();
             capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY, PHANTOMJS_PATH);
             /*capabilities.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
                     phantomjs.getAbsolutePath());*/
-        } else if (INTERNET_EXPLORER.equals(browserName)) {
+        } else if (INTERNET_EXPLORER.equals(BROWSER_NAME)) {
             System.setProperty("webdriver.ie.driver", INTERNET_EXPLORER_PATH);
-            capabilities.setBrowserName(browserName);
+            capabilities.setBrowserName(BROWSER_NAME);
             capabilities = DesiredCapabilities.internetExplorer();
             capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
             capabilities.setCapability(InternetExplorerDriver.INTRODUCE_FLAKINESS_BY_IGNORING_SECURITY_DOMAINS, true);
             capabilities.setCapability("browserstack.ie.enablePopups", false);
-        } else if (HTML_UNIT.equals(browserName)) {
-            capabilities.setBrowserName(browserName);
+        } else if (HTML_UNIT.equals(BROWSER_NAME)) {
+            capabilities.setBrowserName(BROWSER_NAME);
             capabilities = DesiredCapabilities.htmlUnit();
-        } else if (MOBILE_EMULATOR.equals(browserName)) {
+        } else if (MOBILE_EMULATOR.equals(BROWSER_NAME)) {
             System.setProperty("webdriver.chrome.driver", CHROME_PATH);
-            capabilities.setBrowserName(browserName);
+            capabilities.setBrowserName(BROWSER_NAME);
             Map<String, String> mobileEmulation = new HashMap<String, String>();
             mobileEmulation.put("deviceName", DEVICE_NAME);
             Map<String, Object> chromeOptions = new HashMap<String, Object>();
@@ -178,9 +178,9 @@ public class WebDriverFactory {
         } else {
             Assert.fail("invalid driver name");
         }
-        if (browserVersion != null) {
-            capabilities.setVersion(browserVersion);
-            capabilities.setCapability("browser_version", browserVersion);
+        if (BROWSER_VERSION != null) {
+            capabilities.setVersion(BROWSER_VERSION);
+            capabilities.setCapability("browser_version", BROWSER_VERSION);
         }
     }
 
@@ -189,51 +189,39 @@ public class WebDriverFactory {
      *
      * @return hub url {@link URL}
      */
-
-
     public static URL getHubURL() {
         URL hubUrl = null;
-
-            try {
-                hubUrl = new URL(gridHub);
-                log.info("<--- HUB_URL = " + gridHub + " --->");
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-            // In case there is no Hub
-            if (hubUrl == null) {
-                log.error("HUBURL == null!\n");
-                Assert.fail("hub URL == null");
-                return null;
-            } else {
-                return hubUrl;
-            }
+        try {
+            hubUrl = new URL(GRID_HUB);
+            log.info("<--- HUB_URL = " + GRID_HUB + " --->");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        // In case there is no Hub
+        if (hubUrl == null) {
+            log.error("HUB_URL == null!\n");
+            Assert.fail("hub URL == null");
+            return null;
+        } else {
+            return hubUrl;
+        }
     }
 
     /**
-     * Helper method to set version and platform for a specific browser
+     * Helper method to set version and PLATFORM for a specific browser
      *
-     * @param capabilities : DesiredCapabilities object coming from getInstance()
+     * @param capabilities : DesiredCapabilities object coming from getGridInstance()
      */
     private static void setPlatform(DesiredCapabilities capabilities) {
-        if (LINUX.equalsIgnoreCase(platform)) {
+        if (LINUX.equalsIgnoreCase(PLATFORM)) {
             capabilities.setPlatform(Platform.LINUX);
-        } else if (WINDOWS.equalsIgnoreCase(platform)) {
+        } else if (WINDOWS.equalsIgnoreCase(PLATFORM)) {
             capabilities.setPlatform(Platform.WINDOWS);
-        } else if (MAC.equalsIgnoreCase(platform)) {
+        } else if (MAC.equalsIgnoreCase(PLATFORM)) {
             capabilities.setPlatform(Platform.MAC);
         } else {
             capabilities.setPlatform(Platform.ANY);
         }
-    }
-    public static DesiredCapabilities addProxyCapabilities(DesiredCapabilities capability, String sslProxy) {
-        Proxy proxy = new Proxy();
-        proxy.setProxyType(Proxy.ProxyType.MANUAL);
-        proxy.setSslProxy(sslProxy);
-
-        capability.setCapability(CapabilityType.PROXY, proxy);
-        capability.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-        return capability;
     }
 
 }
