@@ -89,6 +89,19 @@ public class Toolbar extends Fixture{
         cms.web.clearAndInput("pageNameField", "NewTestPage");
         cms.web.clickElement("templateDropMenu");
         cms.web.clickElement("templateAccTypes");
+        Thread.sleep(2000);
+        cms.web.clickElement("savePageBtn");
+        Assert.assertTrue(cms.web.isElementPresent("successToast"));
+    }
+
+    @Test(priority = 9)
+    public void deleteNewPage() throws InterruptedException {
+        Thread.sleep(5000);
+        cms.web.clickElement("deletePageBtn");
+        Thread.sleep(2000);
+        cms.web.clickElement("yesDeleteItBtn");
+        Thread.sleep(2000);
+        Assert.assertTrue(cms.web.isElementPresent("successToast"));
     }
 
 }
